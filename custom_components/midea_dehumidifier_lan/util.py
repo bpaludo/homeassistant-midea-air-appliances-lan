@@ -216,7 +216,10 @@ class MideaClient:
             cloud=cloud,
             use_cloud=use_cloud,
             appliance_id=appliance_id,
-            retries=5,
+            # Some air conditioners never answer the second capabilities query, and the
+            # cloud only fails it after ~10 s. Five timed-out retries per appliance add up
+            # to more than Home Assistant's 5-minute setup limit with a handful of units.
+            retries=2 if use_cloud else 5,
             cloud_timeout=6,
             **type_arg,
         )
