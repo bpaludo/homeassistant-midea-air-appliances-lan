@@ -200,8 +200,15 @@ class MideaClient:
         cloud: MideaCloud = None,
         use_cloud: bool = False,
         appliance_id: str = None,
+        appliance_type: str | int | None = None,
     ):
-        """Delegate to midea_beautiful_api.appliance_state"""
+        """Delegate to midea_beautiful_api.appliance_state
+
+        In cloud mode the appliance is not probed on the local network, so its
+        type has to be passed explicitly: otherwise the library assumes a
+        dehumidifier and an air conditioner never answers its commands.
+        """
+        type_arg = {"appliance_type": appliance_type} if appliance_type else {}
         return midea_beautiful_api.appliance_state(
             address=address,
             token=token,
@@ -211,6 +218,7 @@ class MideaClient:
             appliance_id=appliance_id,
             retries=5,
             cloud_timeout=6,
+            **type_arg,
         )
 
     def find_appliances(  # pylint: disable=too-many-arguments,no-self-use
